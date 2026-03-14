@@ -2,5 +2,4 @@
 
 | Cycle | Clip |
 | :---: | :---: |
-| <img src="./assets/cycle1_smaller.png" style="background-color:white;" width="200"/> | <img src="./assets/cycle1_smaller.png" style="background-color:white;" width="200"/> |
-
+| <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/cycle1_smaller.png" width="200"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/cycle1_smaller.png" width="200"/></div> |
