@@ -4,6 +4,3 @@
 |:-----------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------:|
 | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/cycle1_smaller.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/cycle1_smaller.png" width="400"/></div> |
 
-| Cycle | Clip |
-|:-----:|:----:|
-| <div align="center" style="background:white; padding:10px;"><img src="./assets/cycle1_smaller.png" width="400"/></div> | <div align="center" style="background:white; padding:10px;"><img src="./assets/cycle1_smaller.png" width="400"/></div> |
