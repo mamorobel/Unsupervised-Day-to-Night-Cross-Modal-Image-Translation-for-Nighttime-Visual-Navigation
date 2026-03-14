@@ -9,11 +9,12 @@
 
 # AgriNight Dataset
 
-| Farm | Daytime | Converted Nighttime | Segmentation |
-|:----:|:-------:|:-------------------:|:------------:|
-| Farm 1 | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm1_daytime.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm1_converted.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm1_segmentation.png" width="400"/></div> |
-| Farm 2 | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm2_daytime.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm2_converted.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm2_segmentation.png" width="400"/></div> |
-| Farm 3 | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm3_daytime.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm3_converted.png" width="400"/></div> | <div style="background:white; padding:10px; display:inline-block;"><img src="./assets/farm3_segmentation.png" width="400"/></div> |
+
+|       Farm        |                            Daytime                             |                           Nighttime                           |
+|:-----------------:|:--------------------------------------------------------------:|:-------------------------------------------------------------:|
+| Strawberry Farm 1 | <div><img src="./assets/farm1_example.png" width="400"/></div> | <div><img src="./assets/farm1_night.png" width="400"/></div>  |
+| Strawberry Farm 2 | <div><img src="./assets/farm2_example.png" width="400"/></div> | <div><img src="./assets/farm2_night.png" width="400"/></div>  |
+|   Carrot Field    |  <div><img src="./assets/carrot_day.png" width="400"/></div>   | <div><img src="./assets/carrot_night.png" width="400"/></div> |
 
 |            | # Day | # Night | # Rows |
 |------------|------:|--------:|-------:|
@@ -30,6 +31,12 @@
 | **Night** |       12.2% |           33.9% | **53.9%** |
 
 **TABLE II**: Class-wise pixel distribution for daytime and nighttime images in the AgriNight dataset.
+
+
+| Farm |                                                       Daytime                                                        | Converted Nighttime | Segmentation |
+|:----:|:--------------------------------------------------------------------------------------------------------------------:|:-------------------:|:------------:|
+| Farm 1 |                                <div><img src="./assets/farm1.png" width="400"/></div>                                | <div><img src="./assets/farm1_converted.png" width="400"/></div> | <div><img src="./assets/farm1_seg.png" width="400"/></div> |
+| Farm 2 | <div><img src="./assets/farm2.png" width="400"/></div> | <div><img src="./assets/farm2_converted.png" width="400"/></div> | <div><img src="./assets/farm2_seg.png" width="400"/></div> |
 
 # Unsupervised Day2Night Cross Modal Translation
 
