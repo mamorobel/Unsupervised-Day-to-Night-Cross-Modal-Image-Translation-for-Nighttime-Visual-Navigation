@@ -6,4 +6,4 @@
 
 | Cycle | Clip |
 |:-----:|:----:|
-| <img src="./assets/cycle1_smaller.png" width="400" style="background:white; padding:12px;"/> | <img src="./assets/cycle1_smaller.png" width="400" style="background:white; padding:12px;"/> |
+| <div align="center" style="background:white; padding:10px;"><img src="./assets/cycle1_smaller.png" width="400"/></div> | <div align="center" style="background:white; padding:10px;"><img src="./assets/cycle1_smaller.png" width="400"/></div> |
