@@ -30,3 +30,38 @@
 | **Night** |       12.2% |           33.9% | **53.9%** |
 
 **TABLE II**: Class-wise pixel distribution for daytime and nighttime images in the AgriNight dataset.
+
+# Unsupervised Day2Night Cross Modal Translation
+
+[[Vid Placeholder]]
+
+## Masking Method
+
+[[Examples placeholder]]
+
+## Getting Started
+
+### Environmental Setup
+
+[[Placeholder]]
+
+### Training
+
+* Translation Model
+
+`` command placeholder ``
+
+* Segmentation Model
+
+`` command placeholder ``
+
+### Inference
+
+* Translation Model
+
+`` command placeholder ``
+
+* Segmentation Model
+
+`` command placeholder ``
+
