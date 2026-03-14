@@ -44,7 +44,8 @@
 
 ## Masking Method
 
-[[Examples placeholder]]
+![Masking Method](./assets/masking_demo.gif)
+
 
 ## Getting Started
 
