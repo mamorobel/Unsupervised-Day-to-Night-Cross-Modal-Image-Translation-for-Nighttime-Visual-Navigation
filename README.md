@@ -8,8 +8,6 @@
 
 # AgriNight Dataset
 
-# AgriNight Dataset
-
 | Farm | Daytime | Nighttime |
 |:----:|:-------:|:---------:|
 | Strawberry Farm 1 | ![Daytime](./assets/farm1_example.png) | ![Nighttime](./assets/farm1_night.png) |
@@ -23,14 +21,14 @@
 | **Strawberry B** | 150 | 185 | 9 |
 | **Carrot**       | 97  | 179 | 6 |
 
-**TABLE I**: Summary of collected daytime and nighttime images and the number of crop rows covered in each farm.
+**Summary of collected daytime and nighttime images and the number of crop rows covered in each farm.**
 
 |       | Traversable | Non-Traversable |     Other |
 |-------|------------:|----------------:|----------:|
 | **Day**   |   **15.5%** |       **37.8%** |     46.7% |
 | **Night** |       12.2% |           33.9% | **53.9%** |
 
-**TABLE II**: Class-wise pixel distribution for daytime and nighttime images in the AgriNight dataset.
+**Class-wise pixel distribution for daytime and nighttime images in the AgriNight dataset.**
 
 | Farm | Daytime | Converted Nighttime |              Segmentation               |
 |:----:|:-------:|:-------------------:|:---------------------------------------:|
@@ -39,7 +37,12 @@
 
 # Unsupervised Day2Night Cross Modal Translation
 
-[[Vid Placeholder]]
+
+|              Farm A               |              Farm B               |
+|:---------------------------------:|:---------------------------------:|
+| ![Farm A](./assets/repo_vid2.gif) | ![Farm B](./assets/repo_vid1.gif) |
+
+**Sample videos of segmentation on converted nighttime images from strawberry farms A & B.**
 
 ## Masking Method
 
