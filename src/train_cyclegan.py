@@ -28,7 +28,7 @@ from transformers import CLIPProcessor, CLIPModel
 from torchmetrics.classification import MulticlassJaccardIndex
 from scipy import linalg
 from torchvision.models import inception_v3
-from segment import SegModel
+from train_segment import SegModel
 import torchvision.transforms.functional as TF
 import torch.nn.functional as F
 
@@ -39,8 +39,8 @@ class ImageDataset(Dataset):
         self.labelA = labelA
         self.labelB = labelB
         self.mode = mode
-        self.fileA = sorted(os.listdir(self.dirA))
-        self.fileB = sorted(os.listdir(self.dirB))
+        self.filesA = sorted(os.listdir(self.dirA))
+        self.filesB = sorted(os.listdir(self.dirB))
 
         self.img_transform = transforms.Compose([
             transforms.Resize((256, 256)),
@@ -50,7 +50,7 @@ class ImageDataset(Dataset):
         self.label_resize = transforms.Resize((256, 256))
 
     def __len__(self):
-        return max(len(self.fileA), len(self.fileB))
+        return max(len(self.filesA), len(self.filesB))
 
     def __getitem__(self, idx):
         img_a_path = os.path.join(self.dirA, self.filesA[idx % len(self.filesA)])
@@ -364,8 +364,8 @@ class CycleGANTrainer:
 
             self.clip_model.eval()
 
-            self.clip_processor = transforms.Compose([
-                transforms.Resize((self.img_size, self.img_size), interpolation=transforms.InterpolationMode.BICUBIC,
+            self.clip_preprocess = transforms.Compose([
+                transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.BICUBIC,
                                   antialias=True),
                 transforms.Normalize( #https://github.com/openai/CLIP/issues/20 (best normalization for clip models)
                     mean=[0.48145466, 0.4578275, 0.40821073],
@@ -374,7 +374,7 @@ class CycleGANTrainer:
             ])
         else:
             self.clip_model = None
-            self.clip_processor = None
+            self.clip_preprocess = None
 
         if self.use_segmodel:
             self.lambda_semantic = config['lambdas']['semantic']
@@ -396,8 +396,8 @@ class CycleGANTrainer:
 
         self.G_AB = Generator().to(self.device)
         self.G_BA = Generator().to(self.device)
-        self.D_AB = Discriminator().to(self.device)
-        self.D_BA = Discriminator().to(self.device)
+        self.D_A = Discriminator().to(self.device)
+        self.D_B = Discriminator().to(self.device)
 
         if self.use_wandb:
             wandb.init(
@@ -411,7 +411,7 @@ class CycleGANTrainer:
         self.criterion_identity = nn.L1Loss()
 
         if self.use_clip:
-            self.cos_embedding = nn.CosineSimilarity()
+            self.cos_embedding = nn.CosineEmbeddingLoss()
         if self.use_segmodel:
             self.criterion_seg = nn.CrossEntropyLoss()
 
@@ -564,18 +564,6 @@ class CycleGANTrainer:
             loss_clip = 0
             loss_seg = 0
 
-            if self.sd_in_use:
-                print("Extracting Stable Diffusion features for loss computation...")
-                with torch.no_grad():
-                    real_A_features = self.get_sd_features(real_A)
-                    real_B_features = self.get_sd_features(real_B)
-                    fake_A_features = self.get_sd_features(fake_A)
-                    fake_B_features = self.get_sd_features(fake_B)
-
-                loss_feature_A = self.criterion_cycle(fake_A_features, real_A_features)
-                loss_feature_B = self.criterion_cycle(fake_B_features, real_B_features)
-                loss_feature = (loss_feature_A + loss_feature_B) * self.lambda_sd
-
             if self.use_clip:
                 real_A_clip = (real_A + 1.0) / 2.0
                 real_B_clip = (real_B + 1.0) / 2.0
@@ -597,18 +585,6 @@ class CycleGANTrainer:
                 real_B_mask = torch.tensor(self.generate_mask(real_B_clip)).to(self.device)
                 masked_fake_A_clip = transforms.Grayscale(num_output_channels=3)(fake_A_clip * real_B_mask)
                 masked_recov_B_clip = transforms.Grayscale(num_output_channels=3)(recov_B_clip * real_B_mask)
-
-                masked_real_A_clip, masked_fake_B_clip, masked_recov_A_clip = \
-                    self.crop_from_top_nonzero(
-                        masked_real_A_clip,
-                        [masked_real_A_clip, masked_fake_B_clip, masked_recov_A_clip]
-                    )
-
-                real_B_clip, masked_fake_A_clip, masked_recov_B_clip = \
-                    self.crop_from_top_nonzero(
-                        masked_recov_B_clip,
-                        [real_B_clip, masked_fake_A_clip, masked_recov_B_clip]
-                    )
 
                 features_real_A = self.get_clip_features(masked_real_A_clip)
                 features_real_B = self.get_clip_features(real_B_clip)
@@ -722,9 +698,7 @@ class CycleGANTrainer:
             epoch_losses['D_A'] += loss_D_A.item()
             epoch_losses['D_B'] += loss_D_B.item()
             epoch_losses['cycle'] += loss_cycle.item()
-            # epoch_losses['identity'] += loss_identity.item()
-            if self.sd_in_use:
-                epoch_losses['feature'] += loss_feature.item()
+
             if self.use_clip:
                 epoch_losses['clip'] += loss_clip.item()
             if self.use_segmodel:
@@ -758,9 +732,119 @@ class CycleGANTrainer:
         else:
             torch.save(checkpoint, f'{self.experiment_name}/checkpoints/model_{epoch}.pth')
 
+    def load_checkpoint(self, checkpoint_path):
+        checkpoint = torch.load(checkpoint_path, map_location=self.device)
 
+        self.G_AB.load_state_dict(checkpoint['G_AB_state_dict'])
+        self.G_BA.load_state_dict(checkpoint['G_BA_state_dict'])
+        self.D_A.load_state_dict(checkpoint['D_A_state_dict'])
+        self.D_B.load_state_dict(checkpoint['D_B_state_dict'])
 
+        self.optimizer_G.load_state_dict(checkpoint['optimizer_G_state_dict'])
+        self.optimizer_D_A.load_state_dict(checkpoint['optimizer_D_A_state_dict'])
+        self.optimizer_D_B.load_state_dict(checkpoint['optimizer_D_B_state_dict'])
 
+        self.losses = defaultdict(list, checkpoint['losses'])
+        self.best_loss = checkpoint['best_loss']
+
+        print(f"Checkpoint loaded from epoch {checkpoint['epoch']}")
+        return checkpoint['epoch']
+
+    def train(self):
+        print("Starting CycleGAN training...")
+        self.load_dataset()
+        self.global_step = 0
+
+        for epoch in range(self.num_epochs):
+            epoch_losses = self.train_epoch(epoch)
+
+            log_dict = {
+                "epoch": epoch + 1,
+                "train/G_A2B_loss": epoch_losses["G_AB"],
+                "train/G_B2A_loss": epoch_losses["G_BA"],
+                "train/D_A_loss": epoch_losses["D_A"],
+                "train/D_B_loss": epoch_losses["D_B"],
+
+                "train/cycle_loss": epoch_losses["cycle"],
+                "train/identity_loss": epoch_losses["identity"],
+
+                "lr/G": self.optimizer_G.param_groups[0]["lr"],
+                "lr/D_A": self.optimizer_D_A.param_groups[0]["lr"],
+                "lr/D_B": self.optimizer_D_B.param_groups[0]["lr"],
+            }
+
+            if self.use_clip:
+                log_dict["train/clip_loss"] = epoch_losses["clip"]
+
+            if epoch % 10 == 0:
+                self.save_checkpoint(epoch, is_best=False)
+
+            if epoch % self.log_rate == 0:
+                metrics = compute_fid_and_dino(
+                    self.val_loader,
+                    self.G_AB,
+                    self.G_BA,
+                    self.device
+                )
+
+                avg_fid = (metrics["fid_a2b"] + metrics["fid_b2a"]) / 2
+                avg_dino = (metrics["dino_a2b"] + metrics["dino_b2a"]) / 2
+
+                combined_val_score = avg_fid
+
+                if combined_val_score < self.best_loss:
+                    self.best_loss = combined_val_score
+                    print(
+                        f"\n[!] New Best Model! Score: {combined_val_score:.2f} (FID: {avg_fid:.2f}")
+
+                    self.save_checkpoint(epoch, is_best=True)
+
+                log_dict.update({
+                    "metrics/fid_a2b": metrics["fid_a2b"],
+                    "metrics/fid_b2a": metrics["fid_b2a"],
+                    "metrics/dino_a2b": metrics["dino_a2b"],
+                    "metrics/dino_b2a": metrics["dino_b2a"],
+                    "metrics/avg_fid": avg_fid,
+                    "metrics/avg_dino": avg_dino,
+                })
+
+            if self.use_wandb:
+                wandb.log(log_dict, step=self.global_step)
+                self.global_step += 1
+
+            self.lr_scheduler_G.step()
+            self.lr_scheduler_D_A.step()
+            self.lr_scheduler_D_B.step()
+
+            print(
+                f"Epoch [{epoch + 1}/{self.num_epochs}] | "
+                f"G: {epoch_losses['G']:.4f} | "
+                f"D_A: {epoch_losses['D_A']:.4f} | "
+                f"D_B: {epoch_losses['D_B']:.4f} | "
+            )
+
+        print("Training completed")
+        if self.use_wandb:
+            wandb.finish()
+
+def main(args):
+    config = args.config
+    model_idx = args.clip
+    with open(config, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    if model_idx is not None:
+        trainer = CycleGANTrainer(config, model_idx)
+    else:
+        trainer = CycleGANTrainer(config)
+    trainer.train()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Training CycleGan')
+    parser.add_argument('--config', type=str, required=True, help='location of the config file you would like to run')
+    parser.add_argument('--clip', type=str, required=False, help='0 for vit-b and 1 for vit-l')
+    args = parser.parse_args()
+
+    main(args)
 
 
 

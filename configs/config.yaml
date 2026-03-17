@@ -1,0 +1,35 @@
+lr: 0.00001
+img_size: 256
+batch_size: 1
+num_epochs: 500
+lambdas:
+    cyc: 10
+    adv: 1
+    id: 5
+    sd: 1
+    clip: 1
+    semantic: 2
+
+use_clip: True
+clip_models: ["openai/clip-vit-base-patch32", "openai/clip-vit-large-patch14-336"]
+
+use_segmodel: False
+seg_modelA_root: "../segmentation_checkpoints/day_segmodel.pth"
+
+data_root_A: "../datasets/strawberryfield_ds/day_train_set/images"
+data_root_B: "../datasets/full_night_3fold/set_3/train/images"
+
+labels_root_A: "../datasets/strawberryfield_ds/day_train_set/labels"
+labels_root_B: "../datasets/full_night_3fold/set_3/train/labels"
+
+val_root_A: "../datasets/strawberryfield_ds/day_val_set/images"
+val_root_B: "../datasets/full_night_3fold/set_3/val/images"
+
+val_labels_root_A: "../datasets/strawberryfield_ds/day_val_set/labels"
+val_labels_root_B: "../datasets/full_night_3fold/set_3/val/labels"
+
+use_wandb: True
+project_name: day2night
+
+experiment_name: d2n_set3
+log_rate: 5

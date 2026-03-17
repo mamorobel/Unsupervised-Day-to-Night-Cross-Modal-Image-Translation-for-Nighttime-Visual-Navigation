@@ -46,7 +46,7 @@
 
 ## Masking Method
 
-![Masking Method](./assets/masking_demo.gif)
+![Masking Method](./assets/masking.gif)
 
 
 ## Getting Started
