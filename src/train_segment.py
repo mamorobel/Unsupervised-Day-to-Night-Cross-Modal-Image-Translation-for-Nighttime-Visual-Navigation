@@ -1,6 +1,7 @@
 import os
 import cv2
 import time
+import yaml
 import torch
 import random
 import torch.nn as nn
@@ -197,7 +198,7 @@ def compute_mious(y_true, y_pred):
     return np.mean(ious)
 
 
-def train(model, optimizer, loss_fn, train_dataloader, val_dataloader, device, epochs=10):
+def train(model, optimizer, loss_fn, train_dataloader, val_dataloader, device, config, epochs=10):
     criterion = loss_fn
 
     train_loss = []
@@ -271,7 +272,7 @@ def train(model, optimizer, loss_fn, train_dataloader, val_dataloader, device, e
             highest = miou_epoch
             if not os.path.exists('../segmentation_checkpoints'):
                 os.makedirs('../segmentation_checkpoints')
-            torch.save(model.state_dict(), f'../segmentation_checkpoints/ours_combined.pth')
+            torch.save(model.state_dict(), f'../segmentation_checkpoints/{config["experiment_name"]}.pth')
             print(f"model saved at epoch: {epoch}")
 
         if not os.path.exists('../loss_plots'):
@@ -294,10 +295,10 @@ if __name__ == '__main__':
     with open(config_file, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    img_dir = '../data/ours_set_2_16_grayscale_id5_preds_train/images'
-    labels_dir = '../data/ours_set_2_16_grayscale_id5_preds_train/labels'
-    val_dir = '../data/ours_set_2_16_grayscale_id5_preds_val/images'
-    labels_val_dir = '../data/ours_set_2_16_grayscale_id5_preds_val/labels'
+    img_dir = f'../data/{config["experiment_name"]}_preds_train/images'
+    labels_dir = f'../data/{config["experiment_name"]}_preds_train/labels'
+    val_dir = f'../data/{config["experiment_name"]}_preds_val/images'
+    labels_val_dir = f'../data/{config["experiment_name"]}_preds_val/labels'
 
     # img_dir = '../data/full_night_3fold/set_3/train/images'
     # labels_dir = '../data/full_night_3fold/set_3/train/labels'
@@ -317,4 +318,4 @@ if __name__ == '__main__':
     loss = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-4)  # 3e-4
 
-    train(model, optimizer, loss, train_dataloader, val_dataloader, device, epochs=100)
+    train(model, optimizer, loss, train_dataloader, val_dataloader, device, config, epochs=100)

@@ -2,9 +2,9 @@
 
 ![Link to paper will be updated upon acceptance]()
 
-| Cycle | Clip |
-|:-----:|:----:|
-| ![Cycle](./assets/cycle1_smaller.png) | ![Clip](./assets/cycle1_smaller.png) |
+| Cycle |                Clip                 |
+|:-----:|:-----------------------------------:|
+| ![Cycle](./assets/cycle1_smaller.png) | ![Clip](./assets/clip1_smaller.png) |
 
 # AgriNight Dataset
 
@@ -48,30 +48,34 @@
 
 ![Masking Method](./assets/masking.gif)
 
+**Demo of masking method being performed for each column of a grayscaled nighttime image.**
 
 ## Getting Started
 
 ### Environmental Setup
 
-[[Placeholder]]
+**Use the requirements.txt file to create your python virtual environment**
 
-### Training
+* `` python -m venv <venv_name> ``
+* `` source <venv_name>/bin/activate ``
+* `` pip install -r requirements.txt ``
 
-* Translation Model
+### Training Translation Model
 
-`` command placeholder ``
+**while in src folder:**
 
-* Segmentation Model
+* `` python train_cyclegan.py --config ../configs/config.yaml ``
 
-`` command placeholder ``
+### Creating Converted Nighttime Set
 
-### Inference
+* `` python style_inference.py ``
 
-* Translation Model
+### Organizing Converted Nighttime Set For Segmentation
 
-`` command placeholder ``
+* `` python src/create_pred_sets.py ``
+* `` python src/relabel.py ``
 
-* Segmentation Model
+### Training and Evaluating Segmentation
 
-`` command placeholder ``
-
+* `` python train_segment.py ``
+* `` python src/get_acc.py ``
