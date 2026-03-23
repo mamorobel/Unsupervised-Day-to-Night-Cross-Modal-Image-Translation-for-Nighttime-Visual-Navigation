@@ -33,6 +33,13 @@ $$
 \end{aligned}
 $$
 
+$$
+\begin{aligned}
+\mathcal{L}_{sem} = \mathbb{E}_{x \sim p_X} & \left[ 1 - \cos_E(m \odot G(x), m \odot x) + 1 - \cos_E(m \odot F(G(x)), m \odot x) \right] \\
++ \mathbb{E}_{y \sim p_Y} & \left[ 1 - \cos_E(m' \odot F(y), y) + 1 - \cos_E(m' \odot G(F(y)), y) \right]
+\end{aligned}
+$$
+
 Where:
 * $m, m'$ are the binary **visibility masks** simulating the effective sensing range of NIR sensors.
 * $G(x)$ and $F(y)$ are the translated images.
