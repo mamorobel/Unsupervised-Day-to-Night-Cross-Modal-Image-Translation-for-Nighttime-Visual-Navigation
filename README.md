@@ -34,10 +34,10 @@ $$
 $$
 
 $$
-\begin{aligned}
+\begin{array}{rl}
 \mathcal{L}_{sem} = \mathbb{E}_{x \sim p_X} & \left[ 1 - \cos_E(m \odot G(x), m \odot x) + 1 - \cos_E(m \odot F(G(x)), m \odot x) \right] \\
 + \mathbb{E}_{y \sim p_Y} & \left[ 1 - \cos_E(m' \odot F(y), y) + 1 - \cos_E(m' \odot G(F(y)), y) \right]
-\end{aligned}
+\end{array}
 $$
 
 Where:
