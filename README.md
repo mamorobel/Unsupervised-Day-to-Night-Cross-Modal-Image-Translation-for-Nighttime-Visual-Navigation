@@ -26,13 +26,6 @@ To preserve semantic structure across domains, we utilize a pre-trained CLIP ima
 
 To minimize the influence of domain-specific color information, all images are converted to grayscale before encoding. Given the cosine similarity function $\cos_E(a, b)$, the loss is defined as:
 
-$$
-\begin{aligned}
-\mathcal{L}_{sem} = \mathbb{E}_{x \sim p_X} & \left[ 1 - \cos_E(m \odot G(x), m \odot x) + 1 - \cos_E(m \odot F(G(x)), m \odot x) \right] \\
-+ \mathbb{E}_{y \sim p_Y} & \left[ 1 - \cos_E(m' \odot F(y), y) + 1 - \cos_E(m' \odot G(F(y)), y) \right]
-\end{aligned}
-$$
-
 ```math
 \mathcal{L}_{sem} = \mathbb{E}_{x \sim p_X} \left[ 1 - \cos_E(m \odot G(x), m \odot x) + 1 - \cos_E(m \odot F(G(x)), m \odot x) \right] + \mathbb{E}_{y \sim p_Y} \left[ 1 - \cos_E(m' \odot F(y), y) + 1 - \cos_E(m' \odot G(F(y)), y) \right]
 ```
